@@ -11,6 +11,8 @@ const AuthController = (app) => {
    }
    const newUser = usersDao.createUser(req.body);
    req.session["currentUser"] = newUser;
+   console.log("register 2: ", newUser);
+
    res.json(newUser);
  };
 
@@ -20,14 +22,17 @@ const AuthController = (app) => {
    const user = usersDao.findUserByCredentials(username, password);
    if (user) {
      req.session["currentUser"] = user;
+     console.log("login", user);
      res.json(user);
    } else {
+     console.log("login failed");
      res.sendStatus(404);
    }
  };
 
 const profile = (req, res) => {
    const currentUser = req.session["currentUser"];
+   console.log("profile", currentUser);
     if (!currentUser) {
         res.sendStatus(404);
         return;
@@ -36,12 +41,21 @@ const profile = (req, res) => {
 };
 
 const logout = async (req, res) => {
+  console.log("logout");
    req.session.destroy();
    res.sendStatus(200);
  };
 
 
- const update   = (req, res) => { };
+ const update   = (req, res) => { 
+    console.log("update", req.body);
+    const {_id, username, password, firstName, lastName} = req.body;
+    const user = {username, password, firstName, lastName};
+    const updatedUser = usersDao.updateUser(_id, user);
+    console.log("update 2", updatedUser);
+    return updatedUser;
+ };
+
  app.post("/api/users/register", register);
  app.post("/api/users/login",    login);
  app.post("/api/users/profile",  profile);

@@ -8,6 +8,7 @@ import AuthController
  from './users/auth-controller.js';
 import cors from 'cors'
 const app = express()
+
 app.use(
     cors({
         credentials: true,
@@ -20,6 +21,8 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: false,
 };
+app.use(session(sessionOptions));
+
 if (process.env.NODE_ENV !== "development") {
   sessionOptions.proxy = true;
   sessionOptions.cookie = {
@@ -27,7 +30,6 @@ if (process.env.NODE_ENV !== "development") {
     secure: true,
   };
 }
-app.use(session(sessionOptions));
 
 
 app.use(express.json());
