@@ -6,7 +6,7 @@ const AuthController = (app) => {
    const username = req.body.username;
    const user = usersDao.findUserByUsername(username);
    if (user) {
-     res.sendStatus(409);
+     res.sendStatus(409).json({err: "Username already exists"});
      return;
    }
    const newUser = usersDao.createUser(req.body);
@@ -26,7 +26,8 @@ const AuthController = (app) => {
      res.json(user);
    } else {
      console.log("login failed");
-     res.sendStatus(404);
+      res.sendStatus(409).json({err: "Username" + username + "does not exist"});
+
    }
  };
 
@@ -53,14 +54,17 @@ const logout = async (req, res) => {
     const user = {username, password, firstName, lastName};
     const updatedUser = usersDao.updateUser(_id, user);
     console.log("update 2", updatedUser);
-    return updatedUser;
+    req.session["currentUser"] = user;
+
+    res.json(updatedUser);
+    // return updatedUser;
  };
 
+ app.put ("/api/users",          update);
  app.post("/api/users/register", register);
  app.post("/api/users/login",    login);
  app.post("/api/users/profile",  profile);
  app.post("/api/users/logout",   logout);
- app.put ("/api/users",          update);
 };
 
 
